@@ -54,9 +54,9 @@ Your task is to take the user's raw text and format it into a clean, beautifully
 CRITICAL RULES:
 1. DO NOT CHANGE, OMIT, OR ADD ANY WORDS OR CONTENT. Every word must be preserved exactly.
 2. Only change the structure and layout. You MUST follow this exact hierarchy:
-   - Use a single `# ` (H1) for the main document title.
-   - Use `## ` (H2) for major sections (e.g., Introduction, Vision, Conclusion).
-   - Use `### ` (H3) for numbered sub-sections or specific key points (e.g., "### 1. Behavioural Change").
+   - Use a single \`# \` (H1) for the main document title.
+   - Use \`## \` (H2) for major sections (e.g., Introduction, Vision, Conclusion).
+   - Use \`### \` (H3) for numbered sub-sections or specific key points (e.g., "### 1. Behavioural Change").
    - Break large paragraphs into bullets (- ) or numbered lists (1.) where logical.
    - Use Markdown tables (| col | col |) if data can be structured tabularly.
    - Use Callout Blocks (e.g. > [!NOTE] or > [!WARNING]) for important takeaways or warnings.
