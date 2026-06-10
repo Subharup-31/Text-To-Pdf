@@ -2,11 +2,10 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import TurndownService from 'turndown';
-import { gfm } from 'turndown-plugin-gfm';
 
-const turndownService = new TurndownService({ headingStyle: 'atx', bulletListMarker: '-' });
-turndownService.use(gfm);
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
 
 const PDFDownloadSection = dynamic(() => import('@/components/PDFDownloadSection'), {
   ssr: false,
@@ -38,9 +37,7 @@ const SparklesIcon = () => (
   </Svg>
 );
 
-import { marked } from 'marked';
-const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false, loading: () => <div style={{padding: 16, color: 'var(--text-muted)'}}>Loading editor...</div> });
-import 'react-quill-new/dist/quill.snow.css';
+
 
 // ── Toast ─────────────────────────────────────────────────────────────
 function Toasts({ toasts }) {
@@ -213,7 +210,7 @@ export default function Home() {
     setAiStatus({ type: 'loading', message: isFmt ? 'AI is formatting your text…' : 'Checking spelling & grammar…' });
 
     try {
-      const mdInput = rawText ? turndownService.turndown(rawText) : '';
+      const mdInput = rawText || '';
       const res = await fetch('/api/format', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -223,20 +220,20 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
 
       if (isFmt) {
-        setFormattedText(await marked.parse(data.result));
+        setFormattedText(data.result);
         setActivePreview('formatted');
         setAiStatus({ type: 'success', message: 'Formatting done!' });
         addToast('Text formatted! ✨');
       } else {
         // ── INLINE SPELLCHECK ──
-        const correctedHtml = await marked.parse(data.result);
+        const correctedMarkdown = data.result;
         const uncertain = data.uncertain || [];
         const changed = computeChangedWords(mdInput, data.result);
 
         // Save snapshot for undo
         setPreSpellText(rawText);
         // Apply corrections directly into the editor
-        setRawText(correctedHtml);
+        setRawText(correctedMarkdown);
         setUncertainWords(uncertain);
         setSpellFixCount(changed);
 
@@ -291,14 +288,7 @@ export default function Home() {
     addToast('Formatted text copied!');
   }
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['clean']
-    ],
-  };
+
 
   return (
     <div className="app-shell">
@@ -439,19 +429,18 @@ export default function Home() {
               onDismiss={() => setUncertainWords([])}
             />
 
-            <div className="editor-wrapper" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <ReactQuill 
-                theme="snow"
+            <div className="editor-wrapper" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }} data-color-mode="light">
+              <MDEditor
                 value={rawText}
                 onChange={val => {
-                  setRawText(val);
+                  setRawText(val || '');
                   if (spellFixCount > 0) setSpellFixCount(0);
                   if (preSpellText) setPreSpellText('');
                   if (uncertainWords.length) setUncertainWords([]);
                 }}
-                modules={modules}
-                placeholder="Paste or type your text here..."
-                className="quill-editor"
+                preview="edit"
+                height="100%"
+                visibleDragbar={false}
               />
             </div>
 
@@ -478,7 +467,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="preview-wrapper" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div className="preview-wrapper" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }} data-color-mode="light">
               {!formattedText ? (
                 <div className="preview-empty">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -491,12 +480,12 @@ export default function Home() {
                   <p>Click <strong>AI Format</strong> to structure your text</p>
                 </div>
               ) : (
-                <ReactQuill 
-                  theme="snow"
+                <MDEditor
                   value={formattedText}
-                  onChange={setFormattedText}
-                  modules={modules}
-                  className="quill-editor"
+                  onChange={val => setFormattedText(val || '')}
+                  preview="live"
+                  height="100%"
+                  visibleDragbar={false}
                 />
               )}
             </div>
@@ -508,8 +497,8 @@ export default function Home() {
           <span className="download-section-label">📥 Download PDF</span>
           <div className="download-actions">
             <PDFDownloadSection
-              rawText={turndownService.turndown(rawText || '')}
-              formattedText={formattedText ? turndownService.turndown(formattedText) : ''}
+              rawText={rawText || ''}
+              formattedText={formattedText || ''}
               spellcheckedText=""
             />
           </div>

@@ -11,14 +11,11 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@react-pdf/renderer": "^4.5.1",
+    "@uiw/react-md-editor": "^4.1.1",
     "lucide-react": "^1.17.0",
-    "marked": "^18.0.5",
     "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-quill-new": "^3.8.3",
-    "turndown": "^7.2.4",
-    "turndown-plugin-gfm": "^1.0.2"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

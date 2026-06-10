@@ -8,7 +8,7 @@ import {
   View,
   StyleSheet,
   Font,
-  PDFDownloadLink,
+  pdf,
 } from '@react-pdf/renderer';
 
 // ── font registration ─────────────────────────────────────────────────
@@ -641,6 +641,8 @@ function RawPDFDoc({ text }) {
 
 // ── DownloadButton sub-component ──────────────────────────────────────
 function DownloadButton({ doc, filename, label, variant = 'primary', disabled }) {
+  const [loading, setLoading] = useState(false);
+
   if (disabled) {
     return (
       <button className={`btn btn-${variant} btn-md`} disabled>
@@ -649,21 +651,37 @@ function DownloadButton({ doc, filename, label, variant = 'primary', disabled })
     );
   }
 
+  const handleDownload = async () => {
+    try {
+      setLoading(true);
+      const blob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <PDFDownloadLink document={doc} fileName={filename}>
-      {({ loading, error }) => (
-        <button
-          className={`btn btn-${variant} btn-md`}
-          disabled={loading || !!error}
-          title={error ? `Error: ${error}` : ''}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-          </svg>
-          {loading ? 'Preparing…' : label}
-        </button>
-      )}
-    </PDFDownloadLink>
+    <button
+      className={`btn btn-${variant} btn-md`}
+      onClick={handleDownload}
+      disabled={loading}
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+      </svg>
+      {loading ? 'Preparing…' : label}
+    </button>
   );
 }
 
