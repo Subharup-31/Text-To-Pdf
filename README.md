@@ -1,16 +1,16 @@
 # TextCraft: Text to PDF & AI Formatter
 
-TextCraft is a modern web application built with Next.js that allows users to write or paste text, beautifully format it using AI (powered by Google Gemini), and export it to high-quality PDF documents.
+TextCraft is a modern web application built with Next.js that allows users to write or paste text, beautifully format it using AI (powered by Google Gemini), and export it to high-quality PDF documents that perfectly match the browser preview.
 
 ## Features
 
-- **WYSIWYG Editing:** A rich text editor built with `react-quill` for a smooth writing experience.
+- **Native Markdown Editing:** A rich text editor built with `@uiw/react-md-editor` provides a flawless Markdown writing experience with a sleek dark mode.
 - **AI Formatting:** Instantly structure messy notes into organized, professional formats. The AI automatically generates:
   - Markdown Tables for tabular data
   - Callout blocks (Notes, Warnings, Tips)
   - Syntax highlighted code blocks
   - Bulleted and numbered lists
-- **Advanced PDF Generation:** Uses `@react-pdf/renderer` to build precise, customized PDFs entirely on the client side.
+- **1:1 Accurate PDF Generation:** Uses `@react-pdf/renderer` in combination with `react-pdf-html` and `marked` to ensure that the layout, nested lists, and formatting in the PDF exactly mirrors what you see in the editor preview. 
 - **Table of Contents:** Automatically generates a paginated Table of Contents for AI-formatted documents.
 - **Raw or Formatted:** Choose between downloading a raw text PDF or a fully styled AI-formatted PDF.
 
@@ -18,8 +18,8 @@ TextCraft is a modern web application built with Next.js that allows users to wr
 
 - **Framework:** Next.js (App Router)
 - **Styling:** CSS Modules / Vanilla CSS (Custom Design System)
-- **Editor:** `react-quill-new` (with Turndown for Markdown conversion)
-- **PDF Engine:** `@react-pdf/renderer`
+- **Editor:** `@uiw/react-md-editor` (GitHub Flavored Markdown)
+- **PDF Engine:** `@react-pdf/renderer` paired with `react-pdf-html` and `marked`
 - **AI Integration:** Google Gemini API
 
 ## Getting Started

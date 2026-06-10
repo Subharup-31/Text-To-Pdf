@@ -429,7 +429,7 @@ export default function Home() {
               onDismiss={() => setUncertainWords([])}
             />
 
-            <div className="editor-wrapper" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }} data-color-mode="light">
+            <div className="editor-wrapper" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }} data-color-mode="dark">
               <MDEditor
                 value={rawText}
                 onChange={val => {
